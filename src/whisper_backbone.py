@@ -88,14 +88,14 @@ class WhisperBackbone(Backbone):
         hidden_dim,
         intermediate_dim,
         num_mels=80,
-        dropout=0.1,
+        dropout=0.0,
         max_source_sequence_length=1500,
         max_target_sequence_length=448,
         **kwargs,
     ):
         # Encoder inputs
         encoder_feature_input = keras.Input(
-            shape=(None, num_mels), dtype="int32", name="encoder_features"
+            shape=(None, num_mels), dtype="float32", name="encoder_features"
         )
         encoder_padding_mask = keras.Input(
             shape=(None,), dtype="int32", name="encoder_padding_mask"
