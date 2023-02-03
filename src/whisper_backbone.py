@@ -1,7 +1,5 @@
 """Whisper backbone model."""
 
-import copy
-
 import tensorflow as tf
 from tensorflow import keras
 
@@ -10,8 +8,6 @@ from keras_nlp.layers.token_and_position_embedding import (
     TokenAndPositionEmbedding,
 )
 from keras_nlp.models.backbone import Backbone
-from keras_nlp.models.bart.bart_presets import backbone_presets
-from keras_nlp.utils.python_utils import classproperty
 from src.layers.transformer_decoder import TransformerDecoder
 from src.layers.transformer_encoder import TransformerEncoder
 
@@ -272,7 +268,3 @@ class WhisperBackbone(Backbone):
     @property
     def token_embedding(self):
         return self.get_layer("token_embedding")
-
-    @classproperty
-    def presets(cls):
-        return copy.deepcopy(backbone_presets)

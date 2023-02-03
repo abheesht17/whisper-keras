@@ -1,9 +1,5 @@
 """Transformer decoder block implementation based on `keras.layers.Layer`."""
 
-import sys
-
-sys.path.append("./")
-sys.path.append("../")
 
 import tensorflow as tf
 from tensorflow import keras
@@ -17,7 +13,6 @@ from keras_nlp.layers.transformer_layer_utils import (  # isort:skip
 )
 
 
-@keras.utils.register_keras_serializable(package="keras_nlp")
 class TransformerDecoder(keras.layers.Layer):
     """Transformer decoder.
 
