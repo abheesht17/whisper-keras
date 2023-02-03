@@ -9,11 +9,11 @@ from keras_nlp.layers.position_embedding import PositionEmbedding
 from keras_nlp.layers.token_and_position_embedding import (
     TokenAndPositionEmbedding,
 )
-from keras_nlp.layers.transformer_decoder import TransformerDecoder
-from keras_nlp.layers.transformer_encoder import TransformerEncoder
 from keras_nlp.models.backbone import Backbone
 from keras_nlp.models.bart.bart_presets import backbone_presets
 from keras_nlp.utils.python_utils import classproperty
+from src.layers.transformer_decoder import TransformerDecoder
+from src.layers.transformer_encoder import TransformerEncoder
 
 
 def bart_kernel_initializer(stddev=0.02):
@@ -103,7 +103,7 @@ class WhisperBackbone(Backbone):
 
         # Decoder inputs.
         decoder_token_id_input = keras.Input(
-            shape=(None,), dtype="int32", name="decoder_features"
+            shape=(None,), dtype="int32", name="decoder_token_ids"
         )
         decoder_padding_mask = keras.Input(
             shape=(None,), dtype="int32", name="decoder_padding_mask"
@@ -125,7 +125,8 @@ class WhisperBackbone(Backbone):
             name="encoder_token_embedding_conv_layer_1",
         )
         embedded_features = keras.activations.gelu(
-            encoder_conv_layer_1(encoder_feature_input)
+            encoder_conv_layer_1(encoder_feature_input),
+            approximate=False,
         )
 
         # Note: We cannot use `padding="same"` here since that corresponds to a
@@ -142,7 +143,8 @@ class WhisperBackbone(Backbone):
             name="encoder_token_embedding_conv_layer_2",
         )
         embedded_features = keras.activations.gelu(
-            encoder_conv_layer_2(embedded_features)
+            encoder_conv_layer_2(embedded_features),
+            approximate=False,
         )
 
         position_embedding = PositionEmbedding(
