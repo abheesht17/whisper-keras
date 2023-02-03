@@ -6,7 +6,9 @@ import tensorflow as tf
 from tensorflow import keras
 
 from keras_nlp.layers.position_embedding import PositionEmbedding
-from keras_nlp.layers.position_embedding import TokenAndPositionEmbedding
+from keras_nlp.layers.token_and_position_embedding import (
+    TokenAndPositionEmbedding,
+)
 from keras_nlp.layers.transformer_decoder import TransformerDecoder
 from keras_nlp.layers.transformer_encoder import TransformerEncoder
 from keras_nlp.models.backbone import Backbone
