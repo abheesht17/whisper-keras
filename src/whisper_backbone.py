@@ -204,7 +204,7 @@ class WhisperBackbone(Backbone):
         # Instantiate using Functional API Model constructor
         super().__init__(
             inputs={
-                "encoder_feature_input": encoder_feature_input,
+                "encoder_features": encoder_feature_input,
                 "encoder_padding_mask": encoder_padding_mask,
                 "decoder_token_ids": decoder_token_id_input,
                 "decoder_padding_mask": decoder_padding_mask,
