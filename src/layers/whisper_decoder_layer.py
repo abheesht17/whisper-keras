@@ -3,7 +3,7 @@
 
 from tensorflow import keras
 
-from keras_nlp.layers.transformer_encoder import TransformerDecoder
+from keras_nlp.layers.transformer_decoder import TransformerDecoder
 from keras_nlp.utils.keras_utils import clone_initializer
 from src.layers.whisper_multi_head_attention import WhisperMultiHeadAttention
 
