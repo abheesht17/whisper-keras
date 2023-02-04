@@ -8,30 +8,30 @@ from keras_nlp.layers.token_and_position_embedding import (
     TokenAndPositionEmbedding,
 )
 from keras_nlp.models.backbone import Backbone
-from src.layers.transformer_decoder import TransformerDecoder
-from src.layers.transformer_encoder import TransformerEncoder
+from src.layers.transformer_encoder import WhisperEncoderLayer
+from src.layers.whisper_decoder_layer import WhisperDecoderLayer
 
 
-def bart_kernel_initializer(stddev=0.02):
+def whisper_kernel_initializer(stddev=0.02):
     return keras.initializers.TruncatedNormal(stddev=stddev)
 
 
 @keras.utils.register_keras_serializable(package="keras_nlp")
 class WhisperBackbone(Backbone):
-    """BART encoder-decoder network.
+    """Whisper encoder-decoder network for speech.
 
     This class implements a Transformer-based encoder-decoder model as
     described in
-    ["BART: Denoising Sequence-to-Sequence Pre-training for Natural Language Generation, Translation, and Comprehension"](https://arxiv.org/abs/1910.13461).
+    ["Robust Speech Recognition via Large-Scale Weak Supervision"](https://arxiv.org/abs/2212.04356).
 
-    The default constructor gives a fully customizable, randomly initialized BART
+    The default constructor gives a fully customizable, randomly initialized Whisper
     model with any number of layers, heads, and embedding dimensions. To load
     preset architectures and weights, use the `from_preset` constructor.
 
     Disclaimer: Pre-trained models are provided on an "as is" basis, without
     warranties or conditions of any kind. The underlying model is provided by a
     third party and subject to a separate license, available
-    [here](https://github.com/facebookresearch/fairseq/).
+    [here](https://github.com/openai/whisper/).
 
     Args:
         vocabulary_size: int. The size of the token vocabulary.
@@ -39,41 +39,16 @@ class WhisperBackbone(Backbone):
             transformer decoder layers.
         num_heads: int. The number of attention heads for each transformer.
             The hidden size must be divisible by the number of attention heads.
-        num_mels: int. The number of mel-frequency filters. For now, only 80
-            works.
         hidden_dim: int. The size of the transformer encoding and pooler layers.
         intermediate_dim: int. The output dimension of the first Dense layer in
             a two-layer feedforward network for each transformer.
+        num_mels: int. The number of mel-frequency filters. For now, only 80
+            works.
         dropout: float. Dropout probability for the Transformer encoder.
         max_sequence_length: int. The maximum sequence length that this encoder
             can consume. If None, `max_sequence_length` uses the value from
             sequence length. This determines the variable shape for positional
             embeddings.
-
-    Examples:
-    ```python
-    input_data = {
-        "encoder_token_ids": tf.ones(shape=(1, 12), dtype=tf.int64),
-        "encoder_padding_mask": tf.constant(
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0], shape=(1, 12)
-        ),
-        "decoder_token_ids": tf.ones(shape=(1, 12), dtype=tf.int64),
-        "decoder_padding_mask": tf.constant(
-            [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0], shape=(1, 12)
-        ),
-    }
-
-    # Randomly initialized BART encoder-decoder model with a custom config
-    model = keras_nlp.models.WhisperBackbone(
-        vocabulary_size=50265,
-        num_layers=6,
-        num_heads=12,
-        hidden_dim=768,
-        intermediate_dim=3072,
-        max_sequence_length=12,
-    )
-    output = model(input_data)
-    ```
     """
 
     def __init__(
@@ -144,7 +119,7 @@ class WhisperBackbone(Backbone):
         )
 
         position_embedding = PositionEmbedding(
-            initializer=bart_kernel_initializer(),
+            initializer=whisper_kernel_initializer(),
             sequence_length=max_source_sequence_length,
             name="encoder_position_embedding",
         )(embedded_features)
@@ -159,7 +134,7 @@ class WhisperBackbone(Backbone):
         # === Transformer Encoder Layers ===
         # Apply successive transformer encoder blocks.
         for i in range(num_layers):
-            x = TransformerEncoder(
+            x = WhisperEncoderLayer(
                 num_heads=num_heads,
                 intermediate_dim=intermediate_dim,
                 activation=lambda x: keras.activations.gelu(
@@ -167,7 +142,7 @@ class WhisperBackbone(Backbone):
                 ),
                 layer_norm_epsilon=1e-5,
                 dropout=dropout,
-                kernel_initializer=bart_kernel_initializer(),
+                kernel_initializer=whisper_kernel_initializer(),
                 name=f"transformer_encoder_layer_{i}",
             )(x, padding_mask=encoder_padding_mask)
 
@@ -187,7 +162,7 @@ class WhisperBackbone(Backbone):
             vocabulary_size=vocabulary_size,
             sequence_length=max_target_sequence_length,
             embedding_dim=hidden_dim,
-            embeddings_initializer=bart_kernel_initializer(),
+            embeddings_initializer=whisper_kernel_initializer(),
             name="decoder_token_and_position_embedding",
         )(decoder_token_id_input)
 
@@ -200,7 +175,7 @@ class WhisperBackbone(Backbone):
         # === Transformer Decoder Layers ===
         # Apply successive transformer decoder blocks.
         for i in range(num_layers):
-            transformer_decoder_layer = TransformerDecoder(
+            transformer_decoder_layer = WhisperDecoderLayer(
                 intermediate_dim=intermediate_dim,
                 num_heads=num_heads,
                 dropout=dropout,
@@ -208,7 +183,7 @@ class WhisperBackbone(Backbone):
                     x, approximate=False
                 ),
                 layer_norm_epsilon=1e-5,
-                kernel_initializer=bart_kernel_initializer(),
+                kernel_initializer=whisper_kernel_initializer(),
                 name=f"transformer_decoder_layer_{i}",
                 has_cross_attention=True,
             )
