@@ -1,9 +1,8 @@
 import string
 
 import tensorflow as tf
-from keras.layers import core
+from keras.layers import MultiHeadAttention, core
 from keras.utils import tf_utils
-from tensorflow import keras
 
 _CHR_IDX = string.ascii_lowercase
 
@@ -41,7 +40,14 @@ def _get_output_shape(output_rank, known_last_dims):
     return [None] * (output_rank - len(known_last_dims)) + list(known_last_dims)
 
 
-class WhisperMultiHeadAttention(keras.layers.MultiHeadAttention):
+class WhisperMultiHeadAttention(MultiHeadAttention):
+    """Whisper Multi-Head Attention layer.
+
+    Inherits from `keras.layers.MultiHeadAttention`, and overrides the
+    `_build_from_signature` method so that Q, V projection layers have bias
+    whereas K projection layer does not.
+    """
+
     def _build_from_signature(self, query, value, key=None):
         """Builds layers and variables.
 
