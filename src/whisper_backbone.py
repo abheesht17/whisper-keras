@@ -16,7 +16,6 @@ def whisper_kernel_initializer(stddev=0.02):
     return keras.initializers.TruncatedNormal(stddev=stddev)
 
 
-@keras.utils.register_keras_serializable(package="keras_nlp")
 class WhisperBackbone(Backbone):
     """Whisper encoder-decoder network for speech.
 
