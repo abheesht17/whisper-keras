@@ -142,6 +142,7 @@ class WhisperBackbone(Backbone):
                 layer_norm_epsilon=1e-5,
                 dropout=dropout,
                 kernel_initializer=whisper_kernel_initializer(),
+                normalize_first=True,
                 name=f"transformer_encoder_layer_{i}",
             )(x, padding_mask=encoder_padding_mask)
 
@@ -183,6 +184,7 @@ class WhisperBackbone(Backbone):
                 ),
                 layer_norm_epsilon=1e-5,
                 kernel_initializer=whisper_kernel_initializer(),
+                normalize_first=True,
                 name=f"transformer_decoder_layer_{i}",
                 has_cross_attention=True,
             )
