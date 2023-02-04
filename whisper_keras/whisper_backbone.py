@@ -224,6 +224,7 @@ class WhisperBackbone(Backbone):
         self.num_heads = num_heads
         self.hidden_dim = hidden_dim
         self.intermediate_dim = intermediate_dim
+        self.num_mels = num_mels
         self.dropout = dropout
         self.max_source_sequence_length = max_source_sequence_length
         self.max_target_sequence_length = max_target_sequence_length
@@ -235,12 +236,10 @@ class WhisperBackbone(Backbone):
             "num_heads": self.num_heads,
             "hidden_dim": self.hidden_dim,
             "intermediate_dim": self.intermediate_dim,
+            "num_mels": self.num_mels,
             "dropout": self.dropout,
-            "max_sequence_length": self.max_sequence_length,
+            "max_source_sequence_length": self.max_source_sequence_length,
+            "max_target_sequence_length": self.max_target_sequence_length,
             "name": self.name,
             "trainable": self.trainable,
         }
-
-    @property
-    def token_embedding(self):
-        return self.get_layer("token_embedding")
