@@ -1,8 +1,8 @@
 """Transformer encoder block implementation based on `keras.layers.Layer`."""
 
-from keras_nlp.utils.keras_utils import clone_initializer
 from tensorflow import keras
 
+from keras_nlp.utils.keras_utils import clone_initializer
 from src.layers.whisper_multi_head_attention import WhisperMultiHeadAttention
 
 from keras_nlp.layers.transformer_layer_utils import (  # isort:skip
