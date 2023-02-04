@@ -4,13 +4,12 @@
 import tensorflow as tf
 from tensorflow import keras
 
-from keras_nlp.utils.keras_utils import clone_initializer
-from src.layers.whisper_multi_head_attention import WhisperMultiHeadAttention
-
-from keras_nlp.layers.transformer_layer_utils import (  # isort:skip
+from keras_nlp.layers.transformer_layer_utils import (
     compute_causal_mask,
     merge_padding_and_attention_mask,
 )
+from keras_nlp.utils.keras_utils import clone_initializer
+from src.layers.whisper_multi_head_attention import WhisperMultiHeadAttention
 
 
 class TransformerDecoder(keras.layers.Layer):

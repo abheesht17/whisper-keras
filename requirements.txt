@@ -1,0 +1,3 @@
+git+https://github.com/keras-team/keras-nlp.git@master#egg=keras-nlp
+tensorflow
+tensorflow-text
