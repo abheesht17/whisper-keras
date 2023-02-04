@@ -8,8 +8,8 @@ from keras_nlp.layers.token_and_position_embedding import (
     TokenAndPositionEmbedding,
 )
 from keras_nlp.models.backbone import Backbone
-from src.layers.transformer_encoder import WhisperEncoderLayer
 from src.layers.whisper_decoder_layer import WhisperDecoderLayer
+from src.layers.whisper_encoder import WhisperEncoderLayer
 
 
 def whisper_kernel_initializer(stddev=0.02):
