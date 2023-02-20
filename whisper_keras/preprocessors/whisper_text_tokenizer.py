@@ -1,0 +1,43 @@
+"""Whisper tokenizer."""
+
+import json
+
+from keras_nlp.tokenizers.byte_pair_tokenizer import BytePairTokenizer
+
+
+class WhisperTextTokenizer(BytePairTokenizer):
+    def __init__(
+        self,
+        vocabulary,
+        merges,
+        special_tokens_dict,
+        is_multilingual=False,
+        **kwargs,
+    ):
+        # The vocabulary files do not have special tokens. We will insert it in the
+        # vocabulary. Note that HuggingFace and the original OpenAI implementation
+        # do not add them to the vocabulary; they treat them separately as
+        # "added_tokens". But adding them to the vocabulary is more convenient
+        # during detokenization (without affecting tokenization). At the same time,
+        # we add special tokens as member variables.
+        if isinstance(vocabulary, str):
+            with open(vocabulary, "r") as f:
+                vocabulary = json.load(f)
+
+        for token_type_type in special_tokens_dict:
+            for token_type in special_tokens_dict[token_type_type]:
+                token = special_tokens_dict[token_type_type][token_type][0]
+                token_idx = special_tokens_dict[token_type_type][token_type][1]
+                vocabulary[token] = token_idx
+
+                # Add special tokens as member variables.
+                setattr(self, token_type, token)
+                setattr(self, f"{token_type}_id", token_idx)
+
+        super().__init__(
+            vocabulary=vocabulary,
+            merges=merges,
+            **kwargs,
+        )
+
+        self.is_multilingual = is_multilingual

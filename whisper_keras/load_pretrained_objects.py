@@ -3,79 +3,53 @@ import os
 import torch
 from tensorflow import keras
 
-from whisper_keras.whisper_backbone import WhisperBackbone
-
-PRESETS = {
-    "tiny.en": "https://openaipublic.azureedge.net/main/whisper/models/d3dd57d32accea0b295c96e26691aa14d8822fac7d9d27d5dc00b4ca2826dd03/tiny.en.pt",
-    "tiny": "https://openaipublic.azureedge.net/main/whisper/models/65147644a518d12f04e32d6f3b26facc3f8dd46e5390956a9424a650c0ce22b9/tiny.pt",
-    "base.en": "https://openaipublic.azureedge.net/main/whisper/models/25a8566e1d0c1e2231d1c762132cd20e0f96a85d16145c3a00adf5d1ac670ead/base.en.pt",
-    "base": "https://openaipublic.azureedge.net/main/whisper/models/ed3a0b6b1c0edf879ad9b11b1af5a0e6ab5db9205f891f668f8b0e6c6326e34e/base.pt",
-    "small.en": "https://openaipublic.azureedge.net/main/whisper/models/f953ad0fd29cacd07d5a9eda5624af0f6bcf2258be67c92b79389873d91e0872/small.en.pt",
-    "small": "https://openaipublic.azureedge.net/main/whisper/models/9ecf779972d90ba49c06d968637d720dd632c55bbf19d441fb42bf17a411e794/small.pt",
-    "medium.en": "https://openaipublic.azureedge.net/main/whisper/models/d7440d1dc186f76616474e0ff0b3b6b879abc9d1a4926b7adfa41db2d497ab4f/medium.en.pt",
-    "medium": "https://openaipublic.azureedge.net/main/whisper/models/345ae4da62f9b3d59415adc60127b97c714f32e89e936602e85993674d08dcb1/medium.pt",
-    "large-v1": "https://openaipublic.azureedge.net/main/whisper/models/e4b87e7e0bf463eb8e6956e646f1e277e901512310def2c24bf0e11bd3c28e9a/large-v1.pt",
-    "large-v2": "https://openaipublic.azureedge.net/main/whisper/models/81f7c96c852ee8fc832187b0132e569d6c3065a3252ed18e56effd0b6a73e524/large-v2.pt",
-    "large": "https://openaipublic.azureedge.net/main/whisper/models/81f7c96c852ee8fc832187b0132e569d6c3065a3252ed18e56effd0b6a73e524/large-v2.pt",
-}
+from whisper_keras.models.whisper_backbone import WhisperBackbone
+from whisper_keras.preprocessors.whisper_text_tokenizer import (
+    WhisperTextTokenizer,
+)
+from whisper_keras.whisper_configs import (
+    ENGLISH_SPECIAL_TOKENS,
+    ENGLISH_VOCAB_URLS,
+    MULTILINGUAL_SPECIAL_TOKENS,
+    MULTILINGUAL_VOCAB_URLS,
+    PRESETS,
+)
 
 
-def load_whisper_model(variant="tiny.en"):
+def _raise_preset_not_found_error(preset):
+    if preset not in PRESETS:
+        raise ValueError(
+            f"Variant {preset} not found. Available presets: "
+            f"{list(PRESETS.keys())}"
+        )
+
+
+def load_backbone_model(preset="tiny.en"):
     """
     Load a pretrained OpenAI Whisper model, convert checkpoints to Keras format,
     and return a Keras model.
     """
-    if variant not in PRESETS:
-        raise ValueError(
-            f"Variant {variant} not found. Available variants: "
-            f"{list(PRESETS.keys())}"
-        )
+    _raise_preset_not_found_error(preset)
 
-    print("\nDownloading original OpenAI checkpoint...")
-    ckpt_url = PRESETS[variant]
+    # Download original OpenAI checkpoint.
+    ckpt_url = PRESETS[preset]["weights_url"]
     checkpoint_path = keras.utils.get_file(
         fname=None,
         origin=ckpt_url,
-        cache_subdir=os.path.join("checkpoint_conversion", variant),
+        cache_subdir=os.path.join("whisper_keras_presets", preset, "model.pt"),
     )
 
     pt_ckpt = torch.load(checkpoint_path)
-    pt_cfg = pt_ckpt["dims"]
     pt_wts = pt_ckpt["model_state_dict"]
 
-    # Form model config.
-    cfg = {}
+    # Fetch model config.
+    cfg = PRESETS[preset]["model_config"]
 
-    cfg["vocabulary_size"] = pt_cfg["n_vocab"]
-
-    assert pt_cfg["n_audio_layer"] == pt_cfg["n_text_layer"]
-    cfg["num_layers"] = pt_cfg["n_audio_layer"]
-
-    assert pt_cfg["n_audio_head"] == pt_cfg["n_text_head"]
-    cfg["num_heads"] = pt_cfg["n_audio_head"]
-
-    assert pt_cfg["n_audio_state"] == pt_cfg["n_text_state"]
-    cfg["hidden_dim"] = pt_cfg["n_audio_state"]
-
-    assert (
-        pt_wts["encoder.blocks.0.mlp.0.bias"].shape[0]
-        == pt_wts["decoder.blocks.0.mlp.0.bias"].shape[0]
-    )
-    cfg["intermediate_dim"] = pt_wts["encoder.blocks.0.mlp.0.bias"].shape[0]
-
-    cfg["num_mels"] = pt_cfg["n_mels"]
-    cfg["dropout"] = 0.0
-    cfg["max_source_sequence_length"] = pt_cfg["n_audio_ctx"]
-    cfg["max_target_sequence_length"] = pt_cfg["n_text_ctx"]
-
-    print("\nModel Config:", cfg)
-
-    print("\nInitialising Keras model...")
+    # Initialize Keras model.
     model = WhisperBackbone(**cfg)
     model.summary()
 
     # Convert weights.
-    print("\nConverting weights...")
 
     # ===== Encoder weights =====
 
@@ -399,3 +373,48 @@ def load_whisper_model(variant="tiny.en"):
     model.get_layer("decoder_layer_norm").beta.assign(pt_wts["decoder.ln.bias"])
 
     return model
+
+
+def load_tokenizer(preset="tiny.en"):
+    _raise_preset_not_found_error(preset)
+
+    if PRESETS[preset]["is_multilingual"]:
+        vocab_url = MULTILINGUAL_VOCAB_URLS["vocab_url"]
+        merges_url = MULTILINGUAL_VOCAB_URLS["merges_url"]
+    else:
+        vocab_url = ENGLISH_VOCAB_URLS["vocab_url"]
+        merges_url = ENGLISH_VOCAB_URLS["merges_url"]
+
+    vocab_path = keras.utils.get_file(
+        fname=None,
+        origin=vocab_url,
+        cache_subdir=os.path.join(
+            "whisper_keras_presets", preset, "vocab.json"
+        ),
+    )
+    merges_path = keras.utils.get_file(
+        fname=None,
+        origin=merges_url,
+        cache_subdir=os.path.join(
+            "whisper_keras_presets", preset, "merges.txt"
+        ),
+    )
+
+    if PRESETS[preset]["is_multilingual"]:
+        tokenizer = WhisperTextTokenizer(
+            vocabulary=vocab_path,
+            merges=merges_path,
+            special_tokens_dict=MULTILINGUAL_SPECIAL_TOKENS,
+            is_multilingual=True,
+        )
+    else:
+        tokenizer = WhisperTextTokenizer(
+            vocabulary=vocab_path,
+            merges=merges_path,
+            special_tokens_dict=ENGLISH_SPECIAL_TOKENS,
+            is_multilingual=False,
+        )
+
+    # Define the tokenizer.
+    tokenizer = WhisperTextTokenizer(vocabulary=vocab_path, merges=merges_path)
+    return tokenizer
