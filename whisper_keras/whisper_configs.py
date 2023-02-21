@@ -1,28 +1,18 @@
 # ====== Tokenizer configs ======
 
 MULTILINGUAL_SPECIAL_TOKENS = {
-    "generic": {
-        "bos": ("<|startoftranscript|>", 50258),
-        "eos": ("<|endoftext|>", 50257),
-        "pad": ("", 50256),
-    },
-    "speech": {
-        "no_timestamps": ("<|notimestamps|>", 50363),
-    },
-    "task": {
-        "transcribe": ("<|transcribe|>", 50359),
-        "translate": ("<|translate|>", 50358),
-    },
+    "bos": ("<|startoftranscript|>", 50258),
+    "eos": ("<|endoftext|>", 50257),
+    "pad": ("", 50256),
+    "no_timestamps": ("<|notimestamps|>", 50363),
+    "transcribe": ("<|transcribe|>", 50359),
+    "translate": ("<|translate|>", 50358),
 }
 ENGLISH_SPECIAL_TOKENS = {
-    "generic": {
-        "bos": ("<|startoftranscript|>", 50257),
-        "eos": ("<|endoftext|>", 50256),
-        "pad": ("<|endoftext|>", 50256),
-    },
-    "speech": {
-        "no_timestamps": ("<|notimestamps|>", 50362),
-    },
+    "bos": ("<|startoftranscript|>", 50257),
+    "eos": ("<|endoftext|>", 50256),
+    "pad": ("<|endoftext|>", 50256),
+    "no_timestamps": ("<|notimestamps|>", 50362),
 }
 
 MULTILINGUAL_VOCAB_URLS = {

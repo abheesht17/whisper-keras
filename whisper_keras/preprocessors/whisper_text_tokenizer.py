@@ -24,15 +24,14 @@ class WhisperTextTokenizer(BytePairTokenizer):
             with open(vocabulary, "r") as f:
                 vocabulary = json.load(f)
 
-        for token_type_type in special_tokens_dict:
-            for token_type in special_tokens_dict[token_type_type]:
-                token = special_tokens_dict[token_type_type][token_type][0]
-                token_idx = special_tokens_dict[token_type_type][token_type][1]
-                vocabulary[token] = token_idx
+        for token_type in special_tokens_dict:
+            token = special_tokens_dict[token_type][0]
+            token_idx = special_tokens_dict[token_type][1]
+            vocabulary[token] = token_idx
 
-                # Add special tokens as member variables.
-                setattr(self, token_type, token)
-                setattr(self, f"{token_type}_id", token_idx)
+            # Add special tokens as member variables.
+            setattr(self, token_type, token)
+            setattr(self, f"{token_type}_id", token_idx)
 
         super().__init__(
             vocabulary=vocabulary,
