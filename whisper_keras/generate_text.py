@@ -2,6 +2,10 @@ import tensorflow as tf
 
 import keras_nlp
 from whisper_keras.load_pretrained_objects import load_model, load_tokenizer
+from whisper_keras.preprocessors.load_audio import load_audio
+from whisper_keras.preprocessors.whisper_audio_feature_extractor import (
+    WhisperAudioFeatureExtractor,
+)
 from whisper_keras.whisper_config import (
     ENGLISH_SUPPRESSED_TOKENS,
     LANGUAGE_TO_CODE_MAPPING,
@@ -11,7 +15,7 @@ from whisper_keras.whisper_config import (
 
 
 def generate(
-    audio_features,
+    mp3_path,
     preset,
     language=None,
     task="transcribe",
@@ -25,6 +29,10 @@ def generate(
     assert (
         language in LANGUAGE_TO_CODE_MAPPING.keys() or language is None
     ), f"Invalid language: {language}. Should be one of {LANGUAGE_TO_CODE_MAPPING.keys()}"
+
+    audio = load_audio(mp3_path)
+    whisper_audio_feature_extractor = WhisperAudioFeatureExtractor()
+    audio_features = whisper_audio_feature_extractor(audio)
 
     tokenizer = load_tokenizer(preset)
     model = load_model(preset)
