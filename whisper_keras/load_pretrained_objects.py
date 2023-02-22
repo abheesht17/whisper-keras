@@ -381,9 +381,11 @@ def load_tokenizer(preset="tiny.en"):
     if PRESETS[preset]["is_multilingual"]:
         vocab_url = MULTILINGUAL_VOCAB_URLS["vocab_url"]
         merges_url = MULTILINGUAL_VOCAB_URLS["merges_url"]
+        special_tokens_dict = MULTILINGUAL_SPECIAL_TOKENS
     else:
         vocab_url = ENGLISH_VOCAB_URLS["vocab_url"]
         merges_url = ENGLISH_VOCAB_URLS["merges_url"]
+        special_tokens_dict = ENGLISH_SPECIAL_TOKENS
 
     vocab_path = keras.utils.get_file(
         fname=None,
@@ -400,21 +402,11 @@ def load_tokenizer(preset="tiny.en"):
         ),
     )
 
-    if PRESETS[preset]["is_multilingual"]:
-        tokenizer = WhisperTextTokenizer(
-            vocabulary=vocab_path,
-            merges=merges_path,
-            special_tokens_dict=MULTILINGUAL_SPECIAL_TOKENS,
-            is_multilingual=True,
-        )
-    else:
-        tokenizer = WhisperTextTokenizer(
-            vocabulary=vocab_path,
-            merges=merges_path,
-            special_tokens_dict=ENGLISH_SPECIAL_TOKENS,
-            is_multilingual=False,
-        )
-
     # Define the tokenizer.
-    tokenizer = WhisperTextTokenizer(vocabulary=vocab_path, merges=merges_path)
+    tokenizer = WhisperTextTokenizer(
+        vocabulary=vocab_path,
+        merges=merges_path,
+        special_tokens_dict=special_tokens_dict,
+        is_multilingual=PRESETS[preset]["is_multilingual"],
+    )
     return tokenizer
