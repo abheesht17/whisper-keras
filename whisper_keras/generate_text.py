@@ -38,14 +38,13 @@ def generate(
     model = load_model(preset)
 
     is_multilingual = tokenizer.is_multilingual
-    language_ids = tf.constant(LANGUAGE_TO_ID_MAPPING)
+    language_ids = tf.constant(list(LANGUAGE_TO_ID_MAPPING.values()))
     suppressed_ids = tf.constant(ENGLISH_SUPPRESSED_TOKENS)
 
     decoder_token_ids = tf.constant([[tokenizer.bos_token_id]])
     if is_multilingual:
-        suppressed_ids = tf.constant(
-            list(MULTILINGUAL_SUPPRESSED_TOKENS.values())
-        )
+        suppressed_ids = tf.constant(MULTILINGUAL_SUPPRESSED_TOKENS)
+
         if language is None:
             # Detect the language.
 
