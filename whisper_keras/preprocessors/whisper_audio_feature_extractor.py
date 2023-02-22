@@ -103,8 +103,8 @@ class WhisperAudioFeatureExtractor(keras.layers.Layer):
         if not isinstance(audio, (tf.Tensor, tf.RaggedTensor)):
             audio = tf.convert_to_tensor(audio)
 
-        scalar_input = audio.shape.rank == 0
-        if scalar_input:
+        rank_1_input = audio.shape.rank == 1
+        if rank_1_input:
             audio = tf.expand_dims(audio, 0)
 
         # Convert the tensor to a Ragged Tensor.

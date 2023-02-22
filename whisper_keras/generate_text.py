@@ -6,7 +6,7 @@ from whisper_keras.preprocessors.load_audio import load_audio
 from whisper_keras.preprocessors.whisper_audio_feature_extractor import (
     WhisperAudioFeatureExtractor,
 )
-from whisper_keras.whisper_config import (
+from whisper_keras.whisper_configs import (
     ENGLISH_SUPPRESSED_TOKENS,
     LANGUAGE_TO_CODE_MAPPING,
     LANGUAGE_TO_ID_MAPPING,
