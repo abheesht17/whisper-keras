@@ -50,7 +50,7 @@ def generate(
 
             def token_probability_fn(prompt):
                 inputs = {
-                    "encoder_token_ids": audio_features,
+                    "encoder_features": audio_features,
                     "encoder_padding_mask": tf.zeros_like(audio_features),
                     "decoder_token_ids": prompt,
                     "decoder_padding_mask": tf.zeros_like(prompt),
@@ -97,7 +97,7 @@ def generate(
 
     def token_probability_fn(prompt):
         inputs = {
-            "encoder_token_ids": audio_features,
+            "encoder_features": audio_features,
             "encoder_padding_mask": tf.zeros_like(audio_features),
             "decoder_token_ids": prompt,
             "decoder_padding_mask": tf.zeros_like(prompt),
