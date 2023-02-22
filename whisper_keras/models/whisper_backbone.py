@@ -243,3 +243,9 @@ class WhisperBackbone(Backbone):
             "name": self.name,
             "trainable": self.trainable,
         }
+
+    @property
+    def decoder_token_embedding(self):
+        return self.get_layer(
+            "decoder_token_and_position_embedding"
+        ).token_embedding
