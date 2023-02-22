@@ -30,6 +30,7 @@ class WhisperAudioFeatureExtractor(keras.layers.Layer):
         self.hop_length = hop_length
         self.n_mels = n_mels
         self.chunk_length = chunk_length
+        self.n_samples = self.sample_rate * self.chunk_length
 
         # After transposition, `self.mel_filters`'s shape is
         # `(n_fft // 2 + 1, n_mels).`
@@ -43,18 +44,18 @@ class WhisperAudioFeatureExtractor(keras.layers.Layer):
         )
         self.mel_filters = tf.transpose(self.mel_filters)
 
-    def extract_audio_features(self, inputs):
+    def extract_audio_features(self, audio):
         # Use "reflection" padding - `tf.signal.stft` uses symmetric padding
         # internally.
-        inputs = tf.pad(
-            inputs,
+        audio = tf.pad(
+            audio,
             paddings=[[0, 0], [self.n_fft // 2, self.n_fft // 2]],
             mode="REFLECT",
         )
 
         # Compute the mel spectrogram.
         stft = tf.signal.stft(
-            inputs,
+            audio,
             frame_length=self.n_fft,
             frame_step=self.hop_length,
             fft_length=self.n_fft,
@@ -96,4 +97,24 @@ class WhisperAudioFeatureExtractor(keras.layers.Layer):
             type_cast_four,
         )
 
+        return log_spec
+
+    def call(self, audio):
+        if not isinstance(audio, (tf.Tensor, tf.RaggedTensor)):
+            audio = tf.convert_to_tensor(audio)
+
+        scalar_input = audio.shape.rank == 0
+        if scalar_input:
+            audio = tf.expand_dims(audio, 0)
+
+        # Convert the tensor to a Ragged Tensor.
+        audio = tf.RaggedTensor.from_tensor(audio)
+
+        # Pad audio.
+        audio_shape = audio.shape.as_list()
+        audio_shape[-1] = self.n_samples
+        audio = audio.to_tensor(shape=audio_shape)
+
+        # Find the log mel spectrogram.
+        log_spec = self.extract_audio_features(audio)
         return log_spec
