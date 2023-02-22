@@ -158,14 +158,13 @@ class WhisperBackbone(Backbone):
 
         # === Embedding ===
         # Embed tokens and positions.
-        decoder_token_and_position_embedding_layer = TokenAndPositionEmbedding(
+        x = TokenAndPositionEmbedding(
             vocabulary_size=vocabulary_size,
             sequence_length=max_target_sequence_length,
             embedding_dim=hidden_dim,
             embeddings_initializer=whisper_kernel_initializer(),
             name="decoder_token_and_position_embedding",
-        )
-        x = decoder_token_and_position_embedding_layer(decoder_token_id_input)
+        )(decoder_token_id_input)
 
         # Apply dropout to embeddings.
         x = keras.layers.Dropout(
@@ -204,13 +203,6 @@ class WhisperBackbone(Backbone):
         )(x)
         decoder_output = x
 
-        # Get the output logits.
-        decoder_logits = tf.matmul(
-            decoder_output,
-            decoder_token_and_position_embedding_layer.token_embedding.embeddings,
-            transpose_b=True,
-        )
-
         # Instantiate using Functional API Model constructor
         super().__init__(
             inputs={
@@ -222,7 +214,6 @@ class WhisperBackbone(Backbone):
             outputs={
                 "encoder_sequence_output": encoder_output,
                 "decoder_sequence_output": decoder_output,
-                "decoder_logits": decoder_logits,
             },
             **kwargs,
         )
