@@ -4,6 +4,7 @@ import torch
 from tensorflow import keras
 
 from whisper_keras.models.whisper_backbone import WhisperBackbone
+from whisper_keras.models.whisper_speech_to_text import WhisperSpeechToText
 from whisper_keras.preprocessors.whisper_text_tokenizer import (
     WhisperTextTokenizer,
 )
@@ -24,7 +25,7 @@ def _raise_preset_not_found_error(preset):
         )
 
 
-def load_backbone_model(preset="tiny.en"):
+def load_model(preset="tiny.en"):
     """
     Load a pretrained OpenAI Whisper model, convert checkpoints to Keras format,
     and return a Keras model.
@@ -371,6 +372,9 @@ def load_backbone_model(preset="tiny.en"):
         pt_wts["decoder.ln.weight"]
     )
     model.get_layer("decoder_layer_norm").beta.assign(pt_wts["decoder.ln.bias"])
+
+    # WhisperSpeechToText
+    model = WhisperSpeechToText(backbone=model)
 
     return model
 
