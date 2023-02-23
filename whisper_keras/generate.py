@@ -123,7 +123,7 @@ def generate(
     # Remove all pad tokens for cleanliness of output.
     if remove_pad_tokens:
         decoder_sentences = tf.strings.regex_replace(
-            decoder_sentences, tokenizer.pad_token, ""
+            decoder_sentences, tokenizer.pad_token.replace("|", "\\|"), ""
         )
 
         # if tokenizer.pad_token == tokenizer.eos_token:
