@@ -31,7 +31,7 @@ class WhisperTextTokenizer(BytePairTokenizer):
             vocabulary[token] = token_idx
 
             # Add special tokens as member variables.
-            setattr(self, token_type, token)
+            setattr(self, f"{token_type}_token", token)
             setattr(self, f"{token_type}_id", token_idx)
 
         # Add language tokens to the vocabulary.

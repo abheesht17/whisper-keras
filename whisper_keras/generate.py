@@ -16,6 +16,7 @@ def generate(
     language=None,
     task="transcribe",
     max_length=448,
+    remove_pad_tokens=True,
     # no_timestamps=True,
 ):
     assert task in [
@@ -116,6 +117,16 @@ def generate(
     )
     tf.print(decoder_token_ids)
 
+    # Detokenize the token IDs to get text.
     decoder_sentences = tokenizer.detokenize(decoder_token_ids)
+
+    # Remove all pad tokens for cleanliness of output.
+    if remove_pad_tokens:
+        decoder_sentences = tf.strings.regex_replace(
+            decoder_sentences, tokenizer.pad_token, ""
+        )
+
+        # if tokenizer.pad_token == tokenizer.eos_token:
+        #     decoder_sentences = tf.strings.join([decoder_sentences, tokenizer.eos_token], separator="")
 
     return decoder_sentences
