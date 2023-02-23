@@ -10,7 +10,7 @@ class WhisperSpeechToText(Task):
         **kwargs,
     ):
         inputs = backbone.input
-        x = backbone(inputs)
+        x = backbone(inputs)["decoder_sequence_output"]
         # Use token embedding weights to project from the token representation
         # to vocabulary logits.
         outputs = tf.matmul(
