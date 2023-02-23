@@ -1,22 +1,18 @@
 import tensorflow as tf
 
 import keras_nlp
-from whisper_keras.load_pretrained_objects import load_model, load_tokenizer
-from whisper_keras.preprocessors.load_audio import load_audio
-from whisper_keras.preprocessors.whisper_audio_feature_extractor import (
-    WhisperAudioFeatureExtractor,
-)
 from whisper_keras.whisper_configs import (
     ENGLISH_SUPPRESSED_TOKENS,
+    LANGUAGE_CODE_TO_ID_MAPPING,
     LANGUAGE_TO_CODE_MAPPING,
-    LANGUAGE_TO_ID_MAPPING,
     MULTILINGUAL_SUPPRESSED_TOKENS,
 )
 
 
 def generate(
-    mp3_path,
-    preset,
+    audio_features,
+    model,
+    tokenizer,
     language=None,
     task="transcribe",
     max_length=448,
@@ -30,15 +26,8 @@ def generate(
         language in LANGUAGE_TO_CODE_MAPPING.keys() or language is None
     ), f"Invalid language: {language}. Should be one of {LANGUAGE_TO_CODE_MAPPING.keys()}"
 
-    audio = load_audio(mp3_path)
-    whisper_audio_feature_extractor = WhisperAudioFeatureExtractor()
-    audio_features = whisper_audio_feature_extractor(audio)
-
-    tokenizer = load_tokenizer(preset)
-    model = load_model(preset)
-
     is_multilingual = tokenizer.is_multilingual
-    language_ids = tf.constant(list(LANGUAGE_TO_ID_MAPPING.values()))
+    language_ids = tf.constant(list(LANGUAGE_CODE_TO_ID_MAPPING.values()))
     suppressed_ids = tf.constant(ENGLISH_SUPPRESSED_TOKENS)
 
     decoder_token_ids = tf.constant([[tokenizer.bos_id]])
@@ -52,7 +41,7 @@ def generate(
                 inputs = {
                     "encoder_features": audio_features,
                     "encoder_padding_mask": tf.ones_like(
-                        audio_features[..., 0]
+                        audio_features[:, :1500, 0]
                     ),
                     "decoder_token_ids": prompt,
                     "decoder_padding_mask": tf.zeros_like(prompt),
@@ -79,7 +68,7 @@ def generate(
             )
         else:
             language_code = LANGUAGE_TO_CODE_MAPPING[language]
-            language_id = LANGUAGE_TO_ID_MAPPING[f"<{language_code}>"]
+            language_id = LANGUAGE_CODE_TO_ID_MAPPING[f"<{language_code}>"]
             decoder_token_ids = tf.concat(
                 (decoder_token_ids, [[language_id]]), axis=1
             )
@@ -100,7 +89,7 @@ def generate(
     def token_probability_fn(prompt):
         inputs = {
             "encoder_features": audio_features,
-            "encoder_padding_mask": tf.ones_like(audio_features[..., 0]),
+            "encoder_padding_mask": tf.ones_like(audio_features[:, :1500, 0]),
             "decoder_token_ids": prompt,
             "decoder_padding_mask": tf.ones_like(prompt),
         }
@@ -122,6 +111,11 @@ def generate(
         token_probability_fn=token_probability_fn,
         prompt=decoder_token_ids,
         max_length=max_length,
+        end_token_id=tokenizer.eos_id,
+        pad_token_id=tokenizer.pad_id,
     )
+    tf.print(decoder_token_ids)
 
-    return decoder_token_ids
+    decoder_sentences = tokenizer.detokenize(decoder_token_ids)
+
+    return decoder_sentences

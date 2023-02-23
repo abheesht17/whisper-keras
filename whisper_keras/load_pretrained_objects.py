@@ -3,17 +3,18 @@ import os
 import torch
 from tensorflow import keras
 
+from whisper_keras.configs.whisper_presets import PRESETS
+from whisper_keras.configs.whisper_text_tokenizer_configs import (
+    ENGLISH_SPECIAL_TOKENS,
+    ENGLISH_VOCAB_URLS,
+    LANGUAGE_CODE_TO_ID_MAPPING,
+    MULTILINGUAL_SPECIAL_TOKENS,
+    MULTILINGUAL_VOCAB_URLS,
+)
 from whisper_keras.models.whisper_backbone import WhisperBackbone
 from whisper_keras.models.whisper_speech_to_text import WhisperSpeechToText
 from whisper_keras.preprocessors.whisper_text_tokenizer import (
     WhisperTextTokenizer,
-)
-from whisper_keras.whisper_configs import (
-    ENGLISH_SPECIAL_TOKENS,
-    ENGLISH_VOCAB_URLS,
-    MULTILINGUAL_SPECIAL_TOKENS,
-    MULTILINGUAL_VOCAB_URLS,
-    PRESETS,
 )
 
 
@@ -386,10 +387,12 @@ def load_tokenizer(preset="tiny.en"):
         vocab_url = MULTILINGUAL_VOCAB_URLS["vocab_url"]
         merges_url = MULTILINGUAL_VOCAB_URLS["merges_url"]
         special_tokens_dict = MULTILINGUAL_SPECIAL_TOKENS
+        language_tokens_dict = LANGUAGE_CODE_TO_ID_MAPPING
     else:
         vocab_url = ENGLISH_VOCAB_URLS["vocab_url"]
         merges_url = ENGLISH_VOCAB_URLS["merges_url"]
         special_tokens_dict = ENGLISH_SPECIAL_TOKENS
+        language_tokens_dict = None
 
     vocab_path = keras.utils.get_file(
         fname=None,
@@ -411,6 +414,7 @@ def load_tokenizer(preset="tiny.en"):
         vocabulary=vocab_path,
         merges=merges_path,
         special_tokens_dict=special_tokens_dict,
+        language_tokens_dict=language_tokens_dict,
         is_multilingual=PRESETS[preset]["is_multilingual"],
     )
     return tokenizer

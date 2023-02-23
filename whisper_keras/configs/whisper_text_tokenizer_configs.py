@@ -1,4 +1,6 @@
-# ====== Tokenizer configs ======
+"""Whisper text tokenizer configs."""
+
+# === Multilingual configs ===
 
 MULTILINGUAL_SPECIAL_TOKENS = {
     "bos": ("<|startoftranscript|>", 50258),
@@ -8,20 +10,10 @@ MULTILINGUAL_SPECIAL_TOKENS = {
     "transcribe": ("<|transcribe|>", 50359),
     "translate": ("<|translate|>", 50358),
 }
-ENGLISH_SPECIAL_TOKENS = {
-    "bos": ("<|startoftranscript|>", 50257),
-    "eos": ("<|endoftext|>", 50256),
-    "pad": ("<|endoftext|>", 50256),
-    "no_timestamps": ("<|notimestamps|>", 50362),
-}
 
 MULTILINGUAL_VOCAB_URLS = {
     "vocab_url": "https://github.com/openai/whisper/raw/main/whisper/assets/multilingual/vocab.json",
     "merges_url": "https://github.com/openai/whisper/raw/main/whisper/assets/multilingual/merges.txt",
-}
-ENGLISH_VOCAB_URLS = {
-    "vocab_url": "https://github.com/openai/whisper/raw/main/whisper/assets/gpt2/vocab.json",
-    "merges_url": "https://github.com/openai/whisper/raw/main/whisper/assets/gpt2/merges.txt",
 }
 
 MULTILINGUAL_SUPPRESSED_TOKENS = [
@@ -112,6 +104,21 @@ MULTILINGUAL_SUPPRESSED_TOKENS = [
     50361,
     50362,
 ]
+
+# === English configs ===
+
+ENGLISH_SPECIAL_TOKENS = {
+    "bos": ("<|startoftranscript|>", 50257),
+    "eos": ("<|endoftext|>", 50256),
+    "pad": ("<|endoftext|>", 50256),
+    "no_timestamps": ("<|notimestamps|>", 50362),
+}
+
+ENGLISH_VOCAB_URLS = {
+    "vocab_url": "https://github.com/openai/whisper/raw/main/whisper/assets/gpt2/vocab.json",
+    "merges_url": "https://github.com/openai/whisper/raw/main/whisper/assets/gpt2/merges.txt",
+}
+
 ENGLISH_SUPPRESSED_TOKENS = [
     1,
     2,
@@ -318,7 +325,7 @@ LANGUAGE_TO_CODE_MAPPING = {
     "castilian": "es",
 }
 
-LANGUAGE_TO_ID_MAPPING = {
+LANGUAGE_CODE_TO_ID_MAPPING = {
     "<|af|>": 50327,
     "<|am|>": 50334,
     "<|ar|>": 50272,
@@ -418,173 +425,4 @@ LANGUAGE_TO_ID_MAPPING = {
     "<|yi|>": 50335,
     "<|yo|>": 50325,
     "<|zh|>": 50260,
-}
-
-# ====== Preset configs ======
-PRESETS = {
-    "tiny.en": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/d3dd57d32accea0b295c96e26691aa14d8822fac7d9d27d5dc00b4ca2826dd03/tiny.en.pt",
-        "is_multilingual": False,
-        "model_config": {
-            "vocabulary_size": 51864,
-            "num_layers": 4,
-            "num_heads": 6,
-            "hidden_dim": 384,
-            "intermediate_dim": 1536,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "tiny": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/65147644a518d12f04e32d6f3b26facc3f8dd46e5390956a9424a650c0ce22b9/tiny.pt",
-        "is_multilingual": True,
-        "model_config": {
-            "vocabulary_size": 51865,
-            "num_layers": 4,
-            "num_heads": 6,
-            "hidden_dim": 384,
-            "intermediate_dim": 1536,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "base.en": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/25a8566e1d0c1e2231d1c762132cd20e0f96a85d16145c3a00adf5d1ac670ead/base.en.pt",
-        "is_multilingual": False,
-        "model_config": {
-            "vocabulary_size": 51864,
-            "num_layers": 6,
-            "num_heads": 8,
-            "hidden_dim": 512,
-            "intermediate_dim": 2048,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "base": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/ed3a0b6b1c0edf879ad9b11b1af5a0e6ab5db9205f891f668f8b0e6c6326e34e/base.pt",
-        "is_multilingual": True,
-        "model_config": {
-            "vocabulary_size": 51865,
-            "num_layers": 6,
-            "num_heads": 8,
-            "hidden_dim": 512,
-            "intermediate_dim": 2048,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "small.en": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/f953ad0fd29cacd07d5a9eda5624af0f6bcf2258be67c92b79389873d91e0872/small.en.pt",
-        "is_multilingual": False,
-        "model_config": {
-            "vocabulary_size": 51864,
-            "num_layers": 12,
-            "num_heads": 12,
-            "hidden_dim": 768,
-            "intermediate_dim": 3072,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "small": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/9ecf779972d90ba49c06d968637d720dd632c55bbf19d441fb42bf17a411e794/small.pt",
-        "is_multilingual": True,
-        "model_config": {
-            "vocabulary_size": 51865,
-            "num_layers": 12,
-            "num_heads": 12,
-            "hidden_dim": 768,
-            "intermediate_dim": 3072,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "medium.en": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/d7440d1dc186f76616474e0ff0b3b6b879abc9d1a4926b7adfa41db2d497ab4f/medium.en.pt",
-        "is_multilingual": False,
-        "model_config": {
-            "vocabulary_size": 51864,
-            "num_layers": 24,
-            "num_heads": 16,
-            "hidden_dim": 1024,
-            "intermediate_dim": 4096,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "medium": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/345ae4da62f9b3d59415adc60127b97c714f32e89e936602e85993674d08dcb1/medium.pt",
-        "is_multilingual": True,
-        "model_config": {
-            "vocabulary_size": 51865,
-            "num_layers": 24,
-            "num_heads": 16,
-            "hidden_dim": 1024,
-            "intermediate_dim": 4096,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "large-v1": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/e4b87e7e0bf463eb8e6956e646f1e277e901512310def2c24bf0e11bd3c28e9a/large-v1.pt",
-        "is_multilingual": True,
-        "model_config": {
-            "vocabulary_size": 51865,
-            "num_layers": 32,
-            "num_heads": 20,
-            "hidden_dim": 1280,
-            "intermediate_dim": 5120,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "large-v2": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/81f7c96c852ee8fc832187b0132e569d6c3065a3252ed18e56effd0b6a73e524/large-v2.pt",
-        "is_multilingual": True,
-        "model_config": {
-            "vocabulary_size": 51865,
-            "num_layers": 32,
-            "num_heads": 20,
-            "hidden_dim": 1280,
-            "intermediate_dim": 5120,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
-    "large": {
-        "weights_url": "https://openaipublic.azureedge.net/main/whisper/models/81f7c96c852ee8fc832187b0132e569d6c3065a3252ed18e56effd0b6a73e524/large-v2.pt",
-        "is_multilingual": True,
-        "model_config": {
-            "vocabulary_size": 51865,
-            "num_layers": 32,
-            "num_heads": 20,
-            "hidden_dim": 1280,
-            "intermediate_dim": 5120,
-            "num_mels": 80,
-            "dropout": 0.0,
-            "max_source_sequence_length": 1500,
-            "max_target_sequence_length": 448,
-        },
-    },
 }

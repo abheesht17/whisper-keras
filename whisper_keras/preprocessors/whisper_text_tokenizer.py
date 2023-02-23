@@ -11,6 +11,7 @@ class WhisperTextTokenizer(BytePairTokenizer):
         vocabulary,
         merges,
         special_tokens_dict,
+        language_tokens_dict=None,
         is_multilingual=False,
         **kwargs,
     ):
@@ -32,6 +33,12 @@ class WhisperTextTokenizer(BytePairTokenizer):
             # Add special tokens as member variables.
             setattr(self, token_type, token)
             setattr(self, f"{token_type}_id", token_idx)
+
+        # Add language tokens to the vocabulary.
+        if language_tokens_dict is not None:
+            for language_token in language_tokens_dict:
+                language_token_id = language_tokens_dict[language_token]
+                vocabulary[language_token] = language_token_id
 
         super().__init__(
             vocabulary=vocabulary,
