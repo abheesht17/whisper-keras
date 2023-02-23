@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 import keras_nlp
-from whisper_keras.whisper_configs import (
+from whisper_keras.configs.whisper_text_tokenizer_configs import (
     ENGLISH_SUPPRESSED_TOKENS,
     LANGUAGE_CODE_TO_ID_MAPPING,
     LANGUAGE_TO_CODE_MAPPING,
