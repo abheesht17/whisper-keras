@@ -69,7 +69,7 @@ def generate(
             )
         else:
             language_code = LANGUAGE_TO_CODE_MAPPING[language]
-            language_id = LANGUAGE_CODE_TO_ID_MAPPING[f"<{language_code}>"]
+            language_id = LANGUAGE_CODE_TO_ID_MAPPING[f"<|{language_code}|>"]
             decoder_token_ids = tf.concat(
                 (decoder_token_ids, [[language_id]]), axis=1
             )
