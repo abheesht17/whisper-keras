@@ -51,7 +51,9 @@ def generate(
             def token_probability_fn(prompt):
                 inputs = {
                     "encoder_features": audio_features,
-                    "encoder_padding_mask": tf.zeros_like(audio_features),
+                    "encoder_padding_mask": tf.ones_like(
+                        audio_features[..., 0]
+                    ),
                     "decoder_token_ids": prompt,
                     "decoder_padding_mask": tf.zeros_like(prompt),
                 }
@@ -98,9 +100,9 @@ def generate(
     def token_probability_fn(prompt):
         inputs = {
             "encoder_features": audio_features,
-            "encoder_padding_mask": tf.zeros_like(audio_features),
+            "encoder_padding_mask": tf.ones_like(audio_features[..., 0]),
             "decoder_token_ids": prompt,
-            "decoder_padding_mask": tf.zeros_like(prompt),
+            "decoder_padding_mask": tf.ones_like(prompt),
         }
         logits = model(inputs)[:, -1, :]
         vocabulary_size = tf.shape(logits)[-1]
