@@ -49,7 +49,6 @@ def load_model(preset="tiny.en"):
 
     # Initialize Keras model.
     model = WhisperBackbone(**cfg)
-    model.summary()
 
     # Convert weights.
 
