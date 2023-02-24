@@ -4,6 +4,10 @@ WhisperKeras is a project which implements [OpenAI's Whisper](https://openai.com
 model in Keras. The Whisper model is a speech-to-text transformer-based
 encoder-decoder model.
 
+## Quick Start
+
+For a quick start, you can try transcribing audio using [this Colab notebook](https://colab.research.google.com/drive/1SjKogodXfQwZvNnfBU6Mlkn9NN1w7WFQ?usp=sharing).
+
 ## Setup
 
 Clone the repository:
@@ -104,6 +108,7 @@ Output:
 ```
 tf.Tensor([b"<|startoftranscript|><|fr|><|transcribe|><|notimestamps|> Aujourd'hui, je vais vous parler du Pire cadeau d'anniversaire que j'ai re\xc3\xa7u. Quand j'\xc3\xa9tais \xc3\xa0 D\xc3\xb4me, on perd de m'en demande des toujours de faire une liste pour mes cadeaux et la plupart du temps quand je les re\xc3\xa7ovi\xc3\xa9, il y avait \xc3\xa9norm\xc3\xa9ment de choses qui ne faisaient pas partie de cette fameuse liste et qui ne me correspondaient pas forc\xc3\xa9ment et c'\xc3\xa9tait le cas lors de cette anniversaire. J'ai re\xc3\xa7u un petit sac<|endoftext|>"], shape=(1,), dtype=string)
 ```
+
 
 If you want the target language to be English, you can pass `translate = True` to
 the `generate()` function.
