@@ -111,7 +111,6 @@ def generate(
         end_token_id=tokenizer.eos_id,
         pad_token_id=tokenizer.pad_id,
     )
-    tf.print(decoder_token_ids)
 
     # Detokenize the token IDs to get text.
     decoder_sentences = tokenizer.detokenize(decoder_token_ids)
