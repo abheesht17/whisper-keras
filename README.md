@@ -48,7 +48,7 @@ generate audio. Some sample audio files are present [here](https://github.com/ab
 There are multiple Whisper presets available. We will go with `"tiny.en"`, an
 English-only model.
 
-```
+```python
 mp3_path = "./audio_samples/english.mp3"
 preset = "tiny.en"
 
@@ -82,7 +82,7 @@ array([b'<|startoftranscript|><|notimestamps|> My dear Fanny, you feel these thi
 
 We will use the `"tiny"` preset.
 
-```
+```python
 mp3_path = "./audio_samples/french.mp3"
 preset = "tiny"
 
@@ -113,7 +113,7 @@ tf.Tensor([b"<|startoftranscript|><|fr|><|transcribe|><|notimestamps|> Aujourd'h
 If you want the target language to be English, you can pass `translate = True` to
 the `generate()` function.
 
-```
+```python
 generated_text = whisper_keras.generate(
     audio_features=audio_features,
     model=model,
@@ -130,7 +130,7 @@ tf.Tensor([b"<|startoftranscript|><|fr|><|translate|><|notimestamps|> Today I wi
 
 #### If you are sure about the source language, hardcode it!
 
-```
+```python
 generated_text = whisper_keras.generate(
     audio_features=audio_features,
     model=model,
