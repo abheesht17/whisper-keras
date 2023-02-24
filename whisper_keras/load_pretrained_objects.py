@@ -29,7 +29,7 @@ def _raise_preset_not_found_error(preset):
 def load_model(preset="tiny.en"):
     """
     Load a pretrained OpenAI Whisper model, convert checkpoints to Keras format,
-    and return a Keras model.
+    and return a `whisper_keras.models.WhisperSpeechToText` instance.
     """
     _raise_preset_not_found_error(preset)
 
@@ -380,6 +380,10 @@ def load_model(preset="tiny.en"):
 
 
 def load_tokenizer(preset="tiny.en"):
+    """
+    Loads the appropriate vocabulary, merges, special tokens, etc. and returns
+    a `whisper_keras.preprocessors.WhisperTextTokenizer` instance.
+    """
     _raise_preset_not_found_error(preset)
 
     if PRESETS[preset]["is_multilingual"]:

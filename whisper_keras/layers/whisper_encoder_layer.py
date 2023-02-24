@@ -1,4 +1,5 @@
-"""Transformer encoder block implementation based on `keras.layers.Layer`."""
+"""Whisper encoder layer inspired from `keras_nlp.layers.TransformerEncoder`."""
+
 
 from tensorflow import keras
 

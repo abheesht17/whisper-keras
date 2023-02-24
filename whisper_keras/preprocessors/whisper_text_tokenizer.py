@@ -6,6 +6,28 @@ from keras_nlp.tokenizers.byte_pair_tokenizer import BytePairTokenizer
 
 
 class WhisperTextTokenizer(BytePairTokenizer):
+    """Whisper text tokenizer using Byte-Pair Encoding subword segmentation.
+
+    This tokenizer class will tokenize raw strings into integer sequences and
+    is based on `keras_nlp.tokenizers.BytePairTokenizer`.
+    This tokenizer does not provide truncation or padding of inputs.
+
+    Args:
+        vocabulary: string or dict, maps token to integer ids. If it is a
+            string, it should be the file path to a json file.
+        merges: string or list, contains the merge rule. If it is a string,
+            it should be the file path to merge rules. The merge rule file
+            should have one merge rule per line. Every merge rule contains
+            merge entities separated by a space.
+        special_tokens_dict: dict, containing special tokens such as BOS, EOS,
+            etc. For example, check
+            `whisper_keras.configs.whisper_text_tokenizer_configs.MULTILINGUAL_SPECIAL_TOKENS`.
+        language_tokens_dict: dict, containing language tokens, with token as key
+            and token ID as value. For example, check
+            `whisper_keras.configs.whisper_text_tokenizer_configs.LANGUAGE_CODE_TO_ID_MAPPING`.
+        is_multilingual: bool, whether the tokenizer is multilingual or not.
+    """
+
     def __init__(
         self,
         vocabulary,
