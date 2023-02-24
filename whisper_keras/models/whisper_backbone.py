@@ -1,5 +1,6 @@
 """Whisper backbone model."""
 
+
 import tensorflow as tf
 from tensorflow import keras
 
@@ -27,11 +28,6 @@ class WhisperBackbone(Backbone):
     model with any number of layers, heads, and embedding dimensions. To load
     preset architectures and weights, use the `from_preset` constructor.
 
-    Disclaimer: Pre-trained models are provided on an "as is" basis, without
-    warranties or conditions of any kind. The underlying model is provided by a
-    third party and subject to a separate license, available
-    [here](https://github.com/openai/whisper/).
-
     Args:
         vocabulary_size: int. The size of the token vocabulary.
         num_layers: int. The number of transformer encoder layers and
@@ -44,10 +40,14 @@ class WhisperBackbone(Backbone):
         num_mels: int. The number of mel-frequency filters. For now, only 80
             works.
         dropout: float. Dropout probability for the Transformer encoder.
-        max_sequence_length: int. The maximum sequence length that this encoder
-            can consume. If None, `max_sequence_length` uses the value from
-            sequence length. This determines the variable shape for positional
-            embeddings.
+        max_source_sequence_length: int. The maximum sequence length that the
+            audio encoder can consume. Note that this is not the sequence length
+            of the encoder input since the input is passed through a couple of
+            convolutional layers, the second of which has a stride of 2. Hence,
+            `max_source_sequence_length` is generally half of what the maximum
+            encoder input length is.
+        max_target_sequence_length: int. The maximum sequence length that the
+            text decoder can consume.
     """
 
     def __init__(
@@ -63,12 +63,12 @@ class WhisperBackbone(Backbone):
         max_target_sequence_length=448,
         **kwargs,
     ):
-        # Encoder inputs
+        # Encoder inputs. Note that the encoder does not have a padding mask:
+        # https://github.com/openai/whisper/blob/v20230124/whisper/model.py#L132.
+        # This is because we have two convolutional layers in the encoder, post
+        # which the sequence dimension reduces to half.
         encoder_feature_input = keras.Input(
             shape=(None, num_mels), dtype="float32", name="encoder_features"
-        )
-        encoder_padding_mask = keras.Input(
-            shape=(None,), dtype="int32", name="encoder_padding_mask"
         )
 
         # Decoder inputs.
@@ -144,7 +144,7 @@ class WhisperBackbone(Backbone):
                 kernel_initializer=whisper_kernel_initializer(),
                 normalize_first=True,
                 name=f"transformer_encoder_layer_{i}",
-            )(x, padding_mask=encoder_padding_mask)
+            )(x)
 
         x = keras.layers.LayerNormalization(
             name="encoder_layer_norm",
@@ -192,7 +192,6 @@ class WhisperBackbone(Backbone):
                 decoder_sequence=x,
                 encoder_sequence=encoder_output,
                 decoder_padding_mask=decoder_padding_mask,
-                encoder_padding_mask=encoder_padding_mask,
             )
 
         x = keras.layers.LayerNormalization(
@@ -207,7 +206,6 @@ class WhisperBackbone(Backbone):
         super().__init__(
             inputs={
                 "encoder_features": encoder_feature_input,
-                "encoder_padding_mask": encoder_padding_mask,
                 "decoder_token_ids": decoder_token_id_input,
                 "decoder_padding_mask": decoder_padding_mask,
             },

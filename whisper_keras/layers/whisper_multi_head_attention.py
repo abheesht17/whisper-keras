@@ -1,3 +1,6 @@
+"""Whisper Multi-Head Attention layer inspired from `keras.layers.MultiHeadAttention.`"""
+
+
 import string
 
 import tensorflow as tf

@@ -4,6 +4,23 @@ from tensorflow import keras
 
 
 class WhisperAudioFeatureExtractor(keras.layers.Layer):
+    """
+    Whisper audio feature extractor layer.
+
+    This layer takes in a batch of audio tensors, and computes the log-mel
+    spectrogram features for each audio tensor.
+
+    Args:
+        sample_rate: int, defaults to 16000. The sample rate of the audio.
+        n_fft: int, defaults to 400. The size of the Fourier Transform in STFT.
+        hop_length: int, defaults to 160. The distance between neighboring
+            sliding window frames while computing STFT.
+        n_mels: int, defaults to 80. The number of mel-frequency filters.
+        chunk_length: int, defaults to 30. The length of each audio chunk in
+            seconds. The input audio tensor will be padded/trimmed to
+            `chunk_length*sample_rate`.
+    """
+
     def __init__(
         self,
         sample_rate=16000,
@@ -118,3 +135,16 @@ class WhisperAudioFeatureExtractor(keras.layers.Layer):
         # Find the log mel spectrogram.
         log_spec = self.extract_audio_features(audio)
         return log_spec
+
+    def get_config(self):
+        config = super().get_config()
+        config.update(
+            {
+                "sample_rate": self.sample_rate,
+                "n_fft": self.n_fft,
+                "hop_length": self.hop_length,
+                "n_mels": self.n_mels,
+                "chunk_length": self.chunk_length,
+            }
+        )
+        return config
