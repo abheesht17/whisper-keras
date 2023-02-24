@@ -1,4 +1,5 @@
 git+https://github.com/keras-team/keras-nlp.git@d12facb49dc5a1dd34c70881d7192f1bf66d0847#egg=keras-nlp
+ffmpeg-python
 librosa
 tensorflow
 tensorflow-text
